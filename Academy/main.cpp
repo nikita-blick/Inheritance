@@ -12,10 +12,18 @@ using std::endl;
 
 class Human
 {
+	static const int type_width = 12;
+	static const int name_width = 12;
+	static const int age_width = 5;
+	static int count;                 // объявление статической перемеенной 
 	std::string last_name;
 	std::string first_name;
 	int age;
 public:
+	static int get_count()
+	{
+		return count;
+	}
 	const std::string& get_last_name()const
 	{
 		return last_name;
@@ -47,19 +55,33 @@ public:
 		set_last_name(last_name);
 		set_first_name(first_name);
 		set_age(age);
+		count++;
 		cout << "HConstructor:\t" << this << endl;
 	}
 	virtual ~Human()
 	{
+		count--;
 		cout << "HDestructor:\t" << this << endl;
 	}
 
 	//					Methods:
 	virtual std::ostream& info(std::ostream& os)const	//Base class
 	{
-		return os << last_name << " " << first_name << " " << age;
+		os.width(type_width);
+		os << std::left;
+		os << std::string(strchr(typeid(*this).name(), ' ') + 1) + ":";
+		//return os << last_name << " " << first_name << " " << age;  
+		os.width(name_width);
+		os << last_name;
+		os.width(name_width);
+		os << first_name;
+		os.width(age_width);
+		os << age;
+		return os;
 	}
 };
+
+int Human::count = 0;  // Инициализация статической переменной 
 
 std::ostream& operator<<(std::ostream& os, const Human& obj)
 {
@@ -71,6 +93,9 @@ std::ostream& operator<<(std::ostream& os, const Human& obj)
 
 class Student :public Human
 {
+	static const int speciality_width = 22;
+	static const int group_width = 8;
+	static const int rat_width = 8;
 	std::string speciality;
 	std::string group;
 	double rating;			// успеваемость
@@ -126,7 +151,17 @@ public:
 	//					Methods:
 	std::ostream& info(std::ostream& os)const override//Derived class
 	{
-		return Human::info(os) << " " << speciality << " " << group << " " << rating << " " << attendance;
+		//return Human::info(os) << " " << speciality << " " << group << " " << rating << " " << attendance;
+		Human::info(os);
+		os.width(speciality_width);
+		os << speciality;
+		os.width(group_width);
+		os << group;
+		os.width(rat_width);
+		os << rating;
+		os.width(rat_width);
+		os << attendance;
+		return os;
 	}
 };
 
@@ -135,6 +170,8 @@ public:
 
 class Teacher :public Human
 {
+	static const int speciality_width = 32;
+	static const int experience_width = 5;
 	std::string speciality;
 	int experience;
 public:
@@ -168,7 +205,13 @@ public:
 	}
 	std::ostream& info(std::ostream& os)const override
 	{
-		return Human::info(os) << " " << speciality << " " << experience;
+		//return Human::info(os) << " " << speciality << " " << experience;
+		Human::info(os);
+		os.width(speciality_width);
+		os << speciality;
+		os.width(experience_width);
+		os << experience;
+		return os;
 	}
 };
 
@@ -247,6 +290,8 @@ void main()
 		fout << *group[i] << endl;
 		cout << delimiter << endl;
 	}
+	cout << "Количсетво объектов: " << group[0]->get_count() << endl;
+	cout << "Количсетво объектов: " << Human::get_count() << endl;
 	fout.close();
 	system("notepad group.txt");
 
@@ -256,7 +301,4 @@ void main()
 		cout << delimiter << endl;
 	}
 #endif // POLYMORPHISM
-
-
-
 }
